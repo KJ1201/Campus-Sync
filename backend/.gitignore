@@ -1,0 +1,6 @@
+node_modules/
+uploads/
+src/data/events.json
+src/data/messages.json
+bot/session/
+.env

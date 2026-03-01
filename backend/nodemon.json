@@ -1,0 +1,12 @@
+{
+    "ignore": [
+        "src/data/*.json",
+        "bot/session/*",
+        "node_modules/*",
+        "uploads/*"
+    ],
+    "watch": [
+        "src/"
+    ],
+    "ext": "js,mjs,json"
+}

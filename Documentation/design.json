@@ -1,0 +1,813 @@
+{
+  "design_system": {
+    "name": "CampusSync Design System",
+    "description": "A dark-themed, data-dense event aggregator UI. Synthesizes three reference patterns: (1) mobile calendar app with week strip + date-grouped event cards with colored left accent bars, (2) modern SaaS desktop layout with left sidebar navigation and date-column/event-column split, (3) clean structured card components with category color coding. The overall aesthetic is dense but legible — prioritising information hierarchy over decoration.",
+    "target_product": "CampusSync — AI-Powered Campus Event Aggregator",
+    "pages": ["All Events /", "Event Detail /events/:id"],
+
+    "aesthetic_principles": {
+      "tone": "Dark, dense, information-forward. Functional over decorative. Every element earns its place.",
+      "inspiration": [
+        "Reference 1 (mobile calendar): Date-grouped layout, week strip horizontal scroll, left accent bar on event cards, colored category dots on calendar days",
+        "Reference 2 (chat app): Dark gradient backgrounds, high-contrast pill badges, clean card surfaces with subtle elevation",
+        "Reference 3 (desktop SaaS): Left sidebar fixed navigation, date column + event list column two-column split, colored left border on event rows, compact row-level information density"
+      ],
+      "key_patterns": [
+        "Events are always grouped under date headers — never shown as a flat undifferentiated list",
+        "Every event card has a colored left accent bar indicating its category — this is the primary visual signal",
+        "Category color is the single most consistent visual element across mobile and desktop",
+        "Dates are prominent and typographically large — they act as section anchors",
+        "Metadata (time, venue, branch) appears inline with small icons — never in a separate block",
+        "Poster image is a supporting visual, never the primary focus",
+        "Search and filter controls sit above the feed, always visible"
+      ]
+    },
+
+    "color_tokens": {
+      "background": {
+        "primary": "#0a0c10",
+        "surface": "#111318",
+        "surface_elevated": "#181b22",
+        "surface_hover": "#1e2230",
+        "sidebar": "#0e1016",
+        "overlay": "rgba(10, 12, 16, 0.88)"
+      },
+      "border": {
+        "default": "#1e2230",
+        "subtle": "#252a38",
+        "strong": "#2e3347",
+        "focus": "#4ade80"
+      },
+      "text": {
+        "primary": "#e8eaf0",
+        "secondary": "#9aa0b8",
+        "muted": "#5a6080",
+        "inverse": "#0a0c10",
+        "link": "#60a5fa"
+      },
+      "accent": {
+        "green": "#4ade80",
+        "green_10": "rgba(74, 222, 128, 0.10)",
+        "green_20": "rgba(74, 222, 128, 0.20)",
+        "live_pulse": "#4ade80"
+      },
+      "categories": {
+        "hackathon":  { "base": "#a78bfa", "dim": "rgba(167,139,250,0.10)", "border": "rgba(167,139,250,0.25)" },
+        "seminar":    { "base": "#60a5fa", "dim": "rgba(96,165,250,0.10)",  "border": "rgba(96,165,250,0.25)"  },
+        "workshop":   { "base": "#22d3ee", "dim": "rgba(34,211,238,0.10)",  "border": "rgba(34,211,238,0.25)"  },
+        "placement":  { "base": "#4ade80", "dim": "rgba(74,222,128,0.10)",  "border": "rgba(74,222,128,0.25)"  },
+        "exam":       { "base": "#f87171", "dim": "rgba(248,113,113,0.10)", "border": "rgba(248,113,113,0.25)" },
+        "cultural":   { "base": "#f472b6", "dim": "rgba(244,114,182,0.10)", "border": "rgba(244,114,182,0.25)" },
+        "sports":     { "base": "#fb923c", "dim": "rgba(251,146,60,0.10)",  "border": "rgba(251,146,60,0.25)"  },
+        "deadline":   { "base": "#fbbf24", "dim": "rgba(251,191,36,0.10)",  "border": "rgba(251,191,36,0.25)"  },
+        "general":    { "base": "#94a3b8", "dim": "rgba(148,163,184,0.10)", "border": "rgba(148,163,184,0.25)" }
+      },
+      "status": {
+        "urgent_bg":    "rgba(248,113,113,0.10)",
+        "urgent_text":  "#f87171",
+        "urgent_border":"rgba(248,113,113,0.25)",
+        "live_dot":     "#4ade80",
+        "offline_dot":  "#f87171"
+      }
+    },
+
+    "typography": {
+      "font_families": {
+        "display": "Syne",
+        "body": "DM Sans",
+        "mono": "JetBrains Mono",
+        "fallback": "system-ui, sans-serif"
+      },
+      "google_fonts_url": "https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap",
+      "scale": {
+        "xs":   { "size": "11px", "line_height": "1.4", "tracking": "0.04em" },
+        "sm":   { "size": "12px", "line_height": "1.5", "tracking": "0.02em" },
+        "base": { "size": "14px", "line_height": "1.55","tracking": "0"      },
+        "md":   { "size": "15px", "line_height": "1.55","tracking": "0"      },
+        "lg":   { "size": "18px", "line_height": "1.4", "tracking": "-0.01em"},
+        "xl":   { "size": "22px", "line_height": "1.3", "tracking": "-0.02em"},
+        "2xl":  { "size": "28px", "line_height": "1.2", "tracking": "-0.03em"},
+        "3xl":  { "size": "36px", "line_height": "1.1", "tracking": "-0.03em"}
+      },
+      "roles": {
+        "page_title":       { "font": "Syne", "size": "2xl", "weight": 800, "color": "text.primary" },
+        "date_header":      { "font": "Syne", "size": "xl",  "weight": 800, "color": "text.primary", "note": "Large date anchors like Dec 28 / Thursday — inspired by Reference 3 date column" },
+        "card_title":       { "font": "Syne", "size": "md",  "weight": 700, "color": "text.primary", "max_lines": 2 },
+        "detail_title":     { "font": "Syne", "size": "2xl", "weight": 800, "color": "text.primary" },
+        "label_caps":       { "font": "DM Sans", "size": "xs", "weight": 600, "color": "text.muted", "transform": "uppercase", "tracking": "0.08em" },
+        "badge_text":       { "font": "DM Sans", "size": "xs", "weight": 700, "color": "category.base", "transform": "uppercase", "tracking": "0.06em" },
+        "body":             { "font": "DM Sans", "size": "base", "weight": 400, "color": "text.secondary", "line_height": "1.65" },
+        "meta_inline":      { "font": "DM Sans", "size": "sm",  "weight": 400, "color": "text.muted", "note": "Time, venue, branch shown inline with icons" },
+        "button_primary":   { "font": "DM Sans", "size": "sm",  "weight": 600, "color": "text.inverse" },
+        "button_ghost":     { "font": "DM Sans", "size": "sm",  "weight": 600, "color": "accent.green" },
+        "sidebar_item":     { "font": "DM Sans", "size": "sm",  "weight": 500, "color": "text.secondary" },
+        "sidebar_label":    { "font": "DM Sans", "size": "xs",  "weight": 600, "color": "text.muted", "transform": "uppercase", "tracking": "0.08em" }
+      }
+    },
+
+    "spacing": {
+      "base_unit": "4px",
+      "scale": {
+        "1":  "4px",  "2":  "8px",  "3":  "12px", "4":  "16px",
+        "5":  "20px", "6":  "24px", "8":  "32px",  "10": "40px",
+        "12": "48px", "16": "64px"
+      },
+      "layout": {
+        "page_padding_mobile":   "20px",
+        "page_padding_desktop":  "32px",
+        "card_padding":          "14px 16px",
+        "card_gap":              "8px",
+        "section_gap":           "24px",
+        "sidebar_padding":       "16px",
+        "detail_section_gap":    "20px"
+      }
+    },
+
+    "border_radius": {
+      "sm":   "6px",
+      "md":   "10px",
+      "lg":   "14px",
+      "xl":   "18px",
+      "2xl":  "24px",
+      "full": "9999px",
+      "note": "Cards use lg (14px). Badges and chips use full or sm. Modals use xl."
+    },
+
+    "shadows": {
+      "card":     "0 1px 8px rgba(0,0,0,0.35)",
+      "elevated": "0 4px 24px rgba(0,0,0,0.55)",
+      "glow_green": "0 0 10px rgba(74,222,128,0.25)",
+      "glow_category": "0 0 8px var(--category-color-20)"
+    },
+
+    "layout_system": {
+      "breakpoints": {
+        "mobile":  "0 – 767px",
+        "tablet":  "768px – 1279px",
+        "desktop": "1280px+"
+      },
+
+      "mobile_layout": {
+        "description": "Single column. Sticky top navbar. Horizontal scrollable filter bars. Date-grouped card list. Inspired by Reference 1 calendar app pattern.",
+        "structure": {
+          "navbar": {
+            "position": "sticky top-0",
+            "height": "56px",
+            "background": "rgba(10,12,16,0.92)",
+            "backdrop_filter": "blur(12px)",
+            "border_bottom": "1px solid border.default",
+            "z_index": 100,
+            "contents": ["logo_with_pulse_dot", "search_icon", "live_bot_status"]
+          },
+          "search_bar": {
+            "margin": "12px 20px",
+            "height": "40px",
+            "background": "surface_elevated",
+            "border": "1px solid border.default",
+            "border_radius": "full",
+            "icon": "search — left aligned, muted color",
+            "clear_button": "× — right side, appears when text present"
+          },
+          "category_filter_bar": {
+            "type": "horizontal_scroll",
+            "padding": "0 20px",
+            "gap": "8px",
+            "hide_scrollbar": true,
+            "chip_height": "30px",
+            "chip_style": {
+              "default":  "background surface_elevated, border 1px border.default, text muted",
+              "active":   "background category.dim, border 1px category.border, text category.base"
+            }
+          },
+          "branch_filter_bar": {
+            "type": "horizontal_scroll",
+            "same_pattern_as": "category_filter_bar",
+            "options": ["All", "CSE", "ECE", "ME", "CE", "EE", "Other"]
+          },
+          "stats_bar": {
+            "padding": "8px 20px",
+            "layout": "row space-between",
+            "items": ["total_event_count", "active_filter_count", "bot_live_indicator"]
+          },
+          "feed": {
+            "padding": "0 20px 80px",
+            "structure": "date_header then cards beneath, repeating per date group",
+            "date_header": {
+              "padding": "16px 0 8px",
+              "label_style": "label_caps token",
+              "examples": ["TODAY", "TOMORROW", "MON, MAR 6"]
+            },
+            "card_gap": "8px"
+          }
+        }
+      },
+
+      "desktop_layout": {
+        "description": "Three-column layout. Fixed left sidebar for navigation. Center panel for feed. Right panel for event detail. Inspired by Reference 3 SaaS pattern with date-column + event-column split adapted to our dark theme.",
+        "structure": {
+          "sidebar": {
+            "width": "240px",
+            "position": "fixed left",
+            "height": "100vh",
+            "background": "sidebar",
+            "border_right": "1px solid border.default",
+            "padding": "24px 16px",
+            "sections": [
+              {
+                "label": null,
+                "items": ["logo_block"]
+              },
+              {
+                "label": "DISCOVER",
+                "items": ["All Events", "Today", "This Week", "By Category"]
+              },
+              {
+                "label": "FILTER",
+                "items": ["Hackathon", "Seminar", "Workshop", "Placement", "Exam", "Cultural", "Sports", "Deadline", "General"]
+              },
+              {
+                "label": "BRANCHES",
+                "items": ["CSE", "ECE", "ME", "CE", "EE"]
+              }
+            ],
+            "bottom_slot": "bot_status_card",
+            "nav_item_style": {
+              "height": "34px",
+              "padding": "0 10px",
+              "border_radius": "md",
+              "icon_size": "15px",
+              "gap": "10px",
+              "default":  "text sidebar_item color, background transparent",
+              "active":   "text text.primary, background surface_elevated, left border 2px category or accent color",
+              "hover":    "background surface"
+            }
+          },
+          "center_panel": {
+            "margin_left": "240px",
+            "margin_right": "380px",
+            "padding": "32px",
+            "overflow_y": "auto",
+            "structure": {
+              "page_header": {
+                "layout": "row space-between align-center",
+                "left":  "page title — All Events",
+                "right": "search bar + view toggle (List / Grid)"
+              },
+              "filter_bar": {
+                "type": "chip row",
+                "margin_top": "16px",
+                "chips": "All categories + branch options"
+              },
+              "feed": {
+                "description": "Date-grouped list. Inspired directly by Reference 3 — date block on left, events list on right.",
+                "structure": "date_column (80px fixed) + divider (1px) + events_column (flex 1)",
+                "date_column": {
+                  "width": "80px",
+                  "padding_top": "6px",
+                  "date_number":  "2xl Syne extrabold text.primary",
+                  "day_name":     "xs DM Sans muted uppercase tracked"
+                },
+                "events_column": {
+                  "border_left": "1px solid border.default",
+                  "padding_left": "24px",
+                  "event_row_gap": "2px"
+                }
+              }
+            }
+          },
+          "right_panel": {
+            "width": "380px",
+            "position": "fixed right",
+            "height": "100vh",
+            "background": "surface",
+            "border_left": "1px solid border.default",
+            "padding": "28px 24px",
+            "overflow_y": "auto",
+            "empty_state": {
+              "icon": "calendar_sparkle",
+              "heading": "Select an event",
+              "subtext": "Click any event to see full details here"
+            }
+          }
+        }
+      }
+    },
+
+    "components": {
+
+      "event_card": {
+        "description": "Core card component. Left accent bar is the primary category signal — directly from References 1 and 3. Used in both mobile list and desktop row.",
+        "variants": ["mobile_card", "desktop_row", "desktop_calendar_chip"],
+
+        "mobile_card": {
+          "background": "surface",
+          "border": "1px solid border.default",
+          "border_radius": "lg",
+          "padding": "14px 14px 14px 18px",
+          "hover_state": {
+            "background": "surface_elevated",
+            "transform": "translateY(-1px)",
+            "transition": "all 150ms ease"
+          },
+          "left_accent_bar": {
+            "width": "3px",
+            "position": "absolute left-0 top-0 bottom-0",
+            "border_radius": "14px 0 0 14px",
+            "color": "category.base",
+            "note": "This bar is the most important visual affordance on the card — directly from References 1 and 3"
+          },
+          "layout": "column gap-8",
+          "sections": {
+            "top_row": {
+              "layout": "row space-between align-center",
+              "left": "category_badge",
+              "right": "branch_chip"
+            },
+            "title_row": {
+              "layout": "row space-between align-start gap-10",
+              "left": "event_name — card_title typography, flex 1",
+              "right": "poster_thumbnail — 52x52px border-radius md, object-fit cover — only if poster_url exists"
+            },
+            "meta_row": {
+              "layout": "row gap-16 flex-wrap",
+              "items": [
+                { "icon": "clock_14px muted", "text": "formatted date string", "style": "meta_inline" },
+                { "icon": "map_pin_14px muted", "text": "venue short", "style": "meta_inline" }
+              ]
+            },
+            "description_preview": {
+              "text": "2-line truncated description",
+              "style": "body typography, sm size, text.muted color",
+              "overflow": "ellipsis",
+              "-webkit-line-clamp": 2
+            },
+            "bottom_row": {
+              "layout": "row space-between align-center",
+              "left": "deadline_chip — only if within 7 days",
+              "right": "register_button — only if registration_link exists"
+            }
+          }
+        },
+
+        "desktop_row": {
+          "description": "Compact horizontal row used in desktop center panel under each date group. Inspired by Reference 3 event rows.",
+          "height": "auto min-height 56px",
+          "padding": "10px 16px 10px 14px",
+          "background": "transparent",
+          "border_bottom": "1px solid border.subtle",
+          "border_radius": "0",
+          "hover_state": {
+            "background": "surface",
+            "border_radius": "md"
+          },
+          "left_accent_bar": {
+            "width": "3px",
+            "height": "70%",
+            "align_self": "center",
+            "border_radius": "full",
+            "color": "category.base",
+            "margin_right": "12px"
+          },
+          "layout": "row align-center gap-12",
+          "sections": {
+            "accent_bar": "3px colored bar",
+            "content": {
+              "flex": 1,
+              "layout": "column gap-3",
+              "title": "event_name — base Syne semibold",
+              "meta": "row gap-12 — time icon + venue icon + branch chip"
+            },
+            "right_slot": {
+              "layout": "row gap-8 align-center",
+              "items": ["category_badge", "deadline_chip if exists", "poster_thumbnail 40x40px if exists"]
+            }
+          }
+        },
+
+        "desktop_calendar_chip": {
+          "description": "Ultra-compact chip shown inside calendar grid cells",
+          "height": "20px",
+          "padding": "0 6px",
+          "border_radius": "sm",
+          "border_left": "2px solid category.base",
+          "background": "category.dim",
+          "text": "xs DM Sans medium, truncated, category.base color"
+        }
+      },
+
+      "category_badge": {
+        "description": "Pill badge indicating event type. Color always matches category token.",
+        "height": "22px",
+        "padding": "0 8px",
+        "border_radius": "full",
+        "background": "category.dim",
+        "border": "1px solid category.border",
+        "text": "badge_text typography role",
+        "icon": "optional 10px icon left of text",
+        "variants": {
+          "default": "as above",
+          "large": "height 28px, padding 0 12px, text sm"
+        }
+      },
+
+      "branch_chip": {
+        "height": "20px",
+        "padding": "0 8px",
+        "border_radius": "full",
+        "background": "surface_elevated",
+        "border": "1px solid border.default",
+        "text": "xs DM Sans semibold text.muted",
+        "examples": ["CSE", "ECE", "All", "ME+CE"]
+      },
+
+      "deadline_chip": {
+        "height": "22px",
+        "padding": "0 9px",
+        "border_radius": "full",
+        "background": "status.urgent_bg",
+        "border": "1px solid status.urgent_border",
+        "icon": "clock 11px status.urgent_text",
+        "text": "xs DM Sans semibold status.urgent_text",
+        "condition": "show only when date_iso is within 7 days"
+      },
+
+      "filter_chip": {
+        "description": "Used in category and branch filter bars",
+        "height": "30px",
+        "padding": "0 14px",
+        "border_radius": "full",
+        "gap": "6px",
+        "states": {
+          "default": {
+            "background": "surface_elevated",
+            "border": "1px solid border.default",
+            "text_color": "text.muted",
+            "font": "xs DM Sans medium"
+          },
+          "active": {
+            "background": "category.dim",
+            "border": "1px solid category.border",
+            "text_color": "category.base",
+            "font": "xs DM Sans semibold"
+          },
+          "hover": {
+            "background": "surface_hover",
+            "border_color": "border.strong"
+          }
+        }
+      },
+
+      "search_bar": {
+        "height_mobile": "40px",
+        "height_desktop": "36px",
+        "border_radius": "full",
+        "background": "surface_elevated",
+        "border": "1px solid border.default",
+        "focus_border": "1px solid border.focus",
+        "padding": "0 14px 0 36px",
+        "icon_search": "left-aligned inside input, 14px, text.muted",
+        "icon_clear": "right-aligned × button, 14px, text.muted — visible only when value present",
+        "text_style": "sm DM Sans regular text.primary",
+        "placeholder_style": "sm DM Sans regular text.muted",
+        "debounce_ms": 300
+      },
+
+      "date_group_header": {
+        "description": "Anchors the event list — inspired by both Reference 1 (week strip day numbers) and Reference 3 (date column with large number + day name).",
+        "mobile": {
+          "padding": "20px 0 6px",
+          "layout": "row align-baseline gap-8",
+          "date_label": "xs DM Sans semibold uppercase tracked text.muted",
+          "examples": ["TODAY", "TOMORROW", "MON, MAR 6"]
+        },
+        "desktop": {
+          "layout": "column",
+          "date_number": "2xl Syne extrabold text.primary — e.g. 28",
+          "day_name":    "xs DM Sans semibold uppercase tracked text.muted — e.g. THURSDAY",
+          "width": "80px",
+          "vertical_align": "top padding-top 6px"
+        }
+      },
+
+      "navbar": {
+        "mobile": {
+          "height": "56px",
+          "background": "rgba(10,12,16,0.92)",
+          "backdrop_filter": "blur(12px)",
+          "border_bottom": "1px solid border.default",
+          "padding": "0 20px",
+          "layout": "row space-between align-center",
+          "left_slot": {
+            "contents": "logo",
+            "logo": {
+              "font": "Syne extrabold 18px text.primary",
+              "live_dot": {
+                "size": "7px",
+                "color": "accent.live_pulse",
+                "border_radius": "full",
+                "animation": "pulse 2s infinite",
+                "box_shadow": "0 0 6px accent.green"
+              }
+            }
+          },
+          "right_slot": "bot_status_indicator"
+        },
+        "desktop": {
+          "description": "Navbar is replaced by left sidebar on desktop",
+          "see": "layout_system.desktop_layout.structure.sidebar"
+        }
+      },
+
+      "poster_block": {
+        "description": "Event poster / image area. Used in event detail view. Three states.",
+        "states": {
+          "empty": {
+            "background": "surface_elevated",
+            "border": "2px dashed border.subtle",
+            "border_radius": "lg",
+            "content": {
+              "icon": "image_outline 24px text.muted",
+              "label": "sm DM Sans text.muted — No poster attached"
+            }
+          },
+          "loading": {
+            "background": "surface_elevated",
+            "animation": "shimmer gradient left-to-right"
+          },
+          "filled": {
+            "border_radius": "lg",
+            "object_fit": "cover",
+            "overlay": "linear-gradient(to bottom, transparent 40%, background.primary 100%)",
+            "actions": {
+              "position": "absolute top-10 right-10",
+              "buttons": ["expand_fullscreen", "download"],
+              "button_style": "28px circle, background rgba(0,0,0,0.5), backdrop-filter blur(4px), icon 14px text.primary"
+            }
+          }
+        },
+        "height_mobile": "200px",
+        "height_desktop": "220px"
+      },
+
+      "event_detail_view": {
+        "description": "Full detail panel. Mobile = full page. Desktop = right panel.",
+        "layout": "column gap defined by spacing.detail_section_gap",
+        "sections_in_order": [
+          {
+            "id": "poster",
+            "component": "poster_block",
+            "width": "100%"
+          },
+          {
+            "id": "meta_badges",
+            "layout": "row gap-8 flex-wrap",
+            "contents": ["category_badge large variant", "branch_chip"]
+          },
+          {
+            "id": "event_title",
+            "typography": "detail_title role",
+            "margin_top": "4px"
+          },
+          {
+            "id": "date_venue_row",
+            "layout": "row gap-10 flex-wrap",
+            "contents": [
+              {
+                "type": "info_chip",
+                "icon": "calendar 13px",
+                "text": "formatted date or Date TBA",
+                "urgent": "red background if within 3 days"
+              },
+              {
+                "type": "info_chip",
+                "icon": "map_pin 13px",
+                "text": "venue or Venue TBA"
+              }
+            ]
+          },
+          {
+            "id": "description",
+            "typography": "body role",
+            "padding": "4px 0"
+          },
+          {
+            "id": "register_button",
+            "condition": "only if registration_link not null",
+            "style": "full_width",
+            "variant": "primary"
+          },
+          {
+            "id": "source_info",
+            "layout": "row gap-8 align-center",
+            "contents": ["group_dot colored", "group_name xs muted", "·", "sender xs muted", "·", "timestamp xs muted"]
+          },
+          {
+            "id": "raw_message_accordion",
+            "default_state": "collapsed",
+            "header": "xs DM Sans semibold uppercase tracked text.muted — Original Message",
+            "body": "xs JetBrains Mono text.muted, background surface_elevated, padding 12px, border-radius md"
+          }
+        ]
+      },
+
+      "bot_status_indicator": {
+        "description": "Shows whether the WhatsApp Baileys bot is connected and listening.",
+        "states": {
+          "connected": {
+            "dot_color": "accent.live_pulse",
+            "dot_animation": "pulse",
+            "label": "xs DM Sans semibold text.secondary — Bot Connected",
+            "subtext": "xs DM Sans text.muted — Listening to X groups"
+          },
+          "disconnected": {
+            "dot_color": "status.offline_dot",
+            "label": "xs DM Sans semibold text.secondary — Bot Offline",
+            "subtext": "xs DM Sans text.muted — Tap to reconnect"
+          }
+        },
+        "mobile_position": "navbar right slot — just dot + label",
+        "desktop_position": "sidebar bottom — full card with subtext"
+      },
+
+      "live_toast": {
+        "description": "Slide-up notification when Socket.io pushes a new event in real time.",
+        "position_mobile": "bottom-center, above browser chrome, 20px from bottom",
+        "position_desktop": "bottom-right, 24px from edges",
+        "shape": "pill / rounded-full",
+        "padding": "10px 16px",
+        "background": "surface_elevated",
+        "border": "1px solid border.subtle",
+        "shadow": "elevated",
+        "layout": "row gap-10 align-center",
+        "contents": {
+          "left":   "5px green pulse dot",
+          "middle": "sm DM Sans text.secondary — New from [group name]",
+          "right":  "View — sm DM Sans semibold accent.green"
+        },
+        "animation": "slideUpFadeIn 300ms cubic-bezier(0.16,1,0.3,1)",
+        "auto_dismiss_ms": 4000
+      },
+
+      "stats_bar": {
+        "layout": "row gap-8",
+        "cards": [
+          { "id": "total",    "number_color": "accent.green",         "label": "Events" },
+          { "id": "filtered", "number_color": "text.secondary",       "label": "Showing" },
+          { "id": "live",     "number_color": "categories.exam.base", "label": "Urgent" }
+        ],
+        "card_style": {
+          "background": "surface",
+          "border": "1px solid border.default",
+          "border_radius": "lg",
+          "padding": "10px 14px",
+          "number_font": "Syne extrabold xl",
+          "label_font": "DM Sans xs muted"
+        }
+      },
+
+      "buttons": {
+        "primary": {
+          "height": "44px",
+          "padding": "0 20px",
+          "border_radius": "lg",
+          "background": "accent.green",
+          "text": "button_primary typography role",
+          "hover": "background #22c55e",
+          "active": "transform scale(0.98)"
+        },
+        "ghost": {
+          "height": "36px",
+          "padding": "0 16px",
+          "border_radius": "lg",
+          "background": "transparent",
+          "border": "1px solid accent.green_20",
+          "text": "button_ghost typography role",
+          "hover": "background accent.green_10"
+        },
+        "icon_button": {
+          "size": "32px",
+          "border_radius": "md",
+          "background": "surface_elevated",
+          "border": "1px solid border.default",
+          "icon_size": "14px",
+          "icon_color": "text.muted"
+        }
+      },
+
+      "undated_section": {
+        "description": "Collapsible section for events with no extractable date. Sits at the very bottom of the feed.",
+        "header": {
+          "padding": "16px 0 8px",
+          "layout": "row gap-8 align-center",
+          "icon": "question_circle 14px text.muted",
+          "label": "xs DM Sans semibold uppercase tracked text.muted — UNDATED",
+          "toggle": "chevron rotates on expand/collapse"
+        },
+        "default_state": "collapsed"
+      }
+    },
+
+    "motion": {
+      "duration": {
+        "fast":   "120ms",
+        "normal": "200ms",
+        "slow":   "350ms",
+        "enter":  "400ms"
+      },
+      "easing": {
+        "default":  "cubic-bezier(0.4, 0, 0.2, 1)",
+        "enter":    "cubic-bezier(0.16, 1, 0.3, 1)",
+        "exit":     "cubic-bezier(0.4, 0, 1, 1)"
+      },
+      "keyframes": {
+        "fadeUp": {
+          "from": { "opacity": 0, "transform": "translateY(10px)" },
+          "to":   { "opacity": 1, "transform": "translateY(0)" }
+        },
+        "fadeIn": {
+          "from": { "opacity": 0 },
+          "to":   { "opacity": 1 }
+        },
+        "slideUpFadeIn": {
+          "from": { "opacity": 0, "transform": "translateY(16px)" },
+          "to":   { "opacity": 1, "transform": "translateY(0)" }
+        },
+        "pulse": {
+          "0%,100%": { "opacity": 1, "box_shadow": "0 0 6px accent.green" },
+          "50%":     { "opacity": 0.5, "box_shadow": "0 0 14px accent.green" }
+        },
+        "shimmer": {
+          "from": { "background_position": "-200% 0" },
+          "to":   { "background_position": "200% 0" }
+        }
+      },
+      "card_stagger": {
+        "description": "Cards animate in with staggered delays on page load",
+        "delay_per_item": "40ms",
+        "max_items": 8,
+        "animation": "fadeUp slow enter easing"
+      }
+    },
+
+    "interaction_patterns": {
+      "card_click": "Navigate to /events/:id — full page on mobile, populate right panel on desktop",
+      "category_chip_tap": "Toggle filter — active state highlights in category color — deactivate by tapping again",
+      "branch_chip_tap": "Toggle filter — same pattern as category",
+      "clear_filters": "Button appears when any filter active — resets all filters and search",
+      "search_input": "Debounced 300ms — filters event name and description fields in real time",
+      "accordion_toggle": "Raw message section — click header to expand/collapse with chevron rotation",
+      "poster_expand": "Click expand icon on filled poster → opens full-screen overlay with close button",
+      "back_navigation": "Preserves active filter state when returning from detail to feed"
+    },
+
+    "empty_states": {
+      "no_search_results": {
+        "icon": "search_x — 32px text.muted",
+        "heading": "sm Syne bold text.secondary — No events found",
+        "subtext": "xs DM Sans text.muted — Try a different keyword or clear your filters",
+        "action": "ghost button — Clear Filters"
+      },
+      "feed_loading": {
+        "pattern": "3-4 skeleton cards — shimmer animation",
+        "skeleton_card": "same dimensions as event card, background surface_elevated, shimmer overlay"
+      },
+      "bot_not_connected": {
+        "icon": "wifi_off — 32px text.muted",
+        "heading": "sm Syne bold text.secondary — Waiting for events",
+        "subtext": "xs DM Sans text.muted — Connect the bot to a WhatsApp group to start receiving events"
+      },
+      "detail_panel_empty": {
+        "icon": "calendar_sparkle — 28px text.muted",
+        "heading": "sm Syne bold text.secondary — Select an event",
+        "subtext": "xs DM Sans text.muted — Click any event to see full details",
+        "desktop_only": true
+      }
+    },
+
+    "reference_image_patterns_used": {
+      "from_reference_1_mobile_calendar": [
+        "Left colored accent bar on event cards — width 3px, full card height, category color",
+        "Date-grouped event list with date label anchors above each group",
+        "Inline metadata pattern — clock icon + time, pin icon + venue on same row",
+        "Category label above event title in smaller muted text",
+        "Compact card height with tight internal padding",
+        "Horizontal scrollable week strip adapted as horizontal category filter chips"
+      ],
+      "from_reference_2_chat_app": [
+        "Dark surface background with layered card elevation",
+        "High contrast badge pills with colored text on dim background",
+        "Clean card surfaces with subtle 1px borders rather than heavy drop shadows",
+        "Gradient overlay technique used on poster block images"
+      ],
+      "from_reference_3_desktop_saas": [
+        "Fixed left sidebar with section labels in uppercase small caps",
+        "Date-column (fixed width) + events-column (flex) split layout for desktop feed",
+        "Large date number (2xl Syne) paired with day name (xs caps muted) in date column",
+        "Event rows separated by subtle bottom border rather than card elevation",
+        "Left accent bar on rows using category color — 3px, vertically centered",
+        "Inline meta row pattern — organizer, time, venue with small icons on one line",
+        "Right panel for detail view — fixed width, activated on row click"
+      ]
+    }
+  }
+}
