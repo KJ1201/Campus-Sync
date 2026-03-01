@@ -65,30 +65,95 @@ export default function EventFeedList({ events, loading, hasFilters, onClearFilt
     const { groups, undated } = groupByDate(events)
 
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: isDesktop ? '32px' : '24px' }}>
-            {groups.map(([dateKey, groupEvents]) => {
+        <div style={{ display: 'flex', flexDirection: 'column', gap: isDesktop ? '0' : '24px' }}>
+            {groups.map(([dateKey, groupEvents], index) => {
                 const info = getDateInfo(groupEvents[0].date_iso)
 
                 if (isDesktop) {
+                    const isLast = index === groups.length - 1;
                     return (
                         <div key={dateKey} style={{ display: 'flex', gap: '0' }} className="reveal">
-                            <div style={{ width: '80px', flexShrink: 0, paddingTop: '6px' }}>
+                            <div style={{
+                                width: '80px',
+                                flexShrink: 0,
+                                paddingTop: '10px',
+                                position: 'relative',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                alignItems: 'center'
+                            }}>
+                                {/* Robust High-Contrast Timeline Connection */}
+                                {!isLast && (
+                                    <>
+                                        {/* Connector Line (Bold Path) */}
+                                        <div style={{
+                                            position: 'absolute',
+                                            top: '85px',
+                                            bottom: '20px',
+                                            width: '3px',
+                                            background: 'var(--accent-green)',
+                                            opacity: 0.4,
+                                            left: 'calc(50% - 1.5px)',
+                                            zIndex: 0
+                                        }} />
+
+                                        {/* Floating Anchor Node (Top) */}
+                                        <div style={{
+                                            position: 'absolute',
+                                            top: '85px',
+                                            width: '12px',
+                                            height: '12px',
+                                            borderRadius: '50%',
+                                            border: '3px solid var(--accent-green)',
+                                            background: 'var(--bg-primary)',
+                                            boxShadow: '0 0 15px rgba(74, 222, 128, 0.6)',
+                                            left: 'calc(50% - 6px)',
+                                            zIndex: 2
+                                        }} />
+
+                                        {/* Floating Anchor Node (Bottom) */}
+                                        <div style={{
+                                            position: 'absolute',
+                                            bottom: '20px',
+                                            width: '12px',
+                                            height: '12px',
+                                            borderRadius: '50%',
+                                            border: '3px solid var(--accent-green)',
+                                            background: 'var(--bg-primary)',
+                                            boxShadow: '0 0 15px rgba(74, 222, 128, 0.6)',
+                                            left: 'calc(50% - 6px)',
+                                            zIndex: 2
+                                        }} />
+                                    </>
+                                )}
+
                                 <div style={{
                                     fontFamily: 'var(--font-display)',
                                     fontSize: '32px',
                                     fontWeight: 800,
                                     color: 'var(--text-primary)',
-                                    lineHeight: 1
+                                    lineHeight: 1,
+                                    position: 'relative',
+                                    zIndex: 1
                                 }}>{info.number}</div>
                                 <div style={{
                                     fontSize: '11px',
                                     fontWeight: 700,
                                     color: 'var(--text-muted)',
                                     letterSpacing: '0.08em',
-                                    marginTop: '4px'
+                                    marginTop: '4px',
+                                    position: 'relative',
+                                    zIndex: 1
                                 }}>{info.day}</div>
                             </div>
-                            <div style={{ flex: 1, borderLeft: '1px solid var(--border-default)', paddingLeft: '24px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                            <div style={{
+                                flex: 1,
+                                paddingLeft: '24px',
+                                paddingBottom: isLast ? '20px' : '48px',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                gap: '12px'
+                            }}>
                                 {groupEvents.map(e => (
                                     <EventCard key={e.id} event={e} onDelete={onDeleteEvent} onClick={() => onEventSelect?.(e.id)} />
                                 ))}

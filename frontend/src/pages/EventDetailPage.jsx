@@ -16,6 +16,7 @@ export default function EventDetailPage() {
     const [event, setEvent] = useState(null)
     const [loading, setLoading] = useState(true)
     const [rawOpen, setRawOpen] = useState(false)
+    const [isPosterOpen, setIsPosterOpen] = useState(false)
 
     useEffect(() => {
         setLoading(true)
@@ -60,9 +61,23 @@ export default function EventDetailPage() {
                 </div>
 
                 <div style={{ padding: '20px' }}>
-                    <div style={{ width: '100%', borderRadius: '24px', overflow: 'hidden', background: 'var(--bg-surface-elevated)', border: '1px solid var(--border-default)', boxShadow: '0 20px 40px -20px rgba(0,0,0,0.5)' }}>
+                    <div
+                        onClick={() => event.poster_url && setIsPosterOpen(true)}
+                        style={{
+                            width: '100%',
+                            borderRadius: '24px',
+                            overflow: 'hidden',
+                            background: 'var(--bg-surface-elevated)',
+                            border: '1px solid var(--border-default)',
+                            boxShadow: '0 20px 40px -20px rgba(0,0,0,0.5)',
+                            cursor: event.poster_url ? 'zoom-in' : 'default',
+                            transition: 'all 0.2s'
+                        }}
+                        onMouseEnter={e => { if (event.poster_url) e.currentTarget.style.borderColor = 'var(--accent-green)' }}
+                        onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border-default)' }}
+                    >
                         {event.poster_url ? (
-                            <img src={event.poster_url} style={{ width: '100%', height: 'auto', maxHeight: '320px', objectFit: 'cover' }} alt="poster" />
+                            <img src={event.poster_url} style={{ width: '100%', height: 'auto', maxHeight: '420px', objectFit: 'cover' }} alt="poster" />
                         ) : (
                             <div style={{ height: '220px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '48px', opacity: 0.3 }}>🎪</div>
                         )}
@@ -160,6 +175,58 @@ export default function EventDetailPage() {
                     </div>
                 </div>
             </main>
+
+            {/* Poster Full View Modal */}
+            {isPosterOpen && event.poster_url && (
+                <div
+                    onClick={() => setIsPosterOpen(false)}
+                    style={{
+                        position: 'fixed',
+                        inset: 0,
+                        zIndex: 1000,
+                        background: 'rgba(0,0,0,0.92)',
+                        backdropFilter: 'blur(8px)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        padding: '20px',
+                        cursor: 'zoom-out',
+                        animation: 'reveal 0.3s ease'
+                    }}
+                >
+                    <img
+                        src={event.poster_url}
+                        style={{
+                            maxWidth: '95%',
+                            maxHeight: '95vh',
+                            borderRadius: '12px',
+                            boxShadow: '0 0 40px rgba(0,0,0,0.8)',
+                            objectFit: 'contain'
+                        }}
+                        onClick={e => e.stopPropagation()}
+                        alt="full poster"
+                    />
+                    <button
+                        onClick={() => setIsPosterOpen(false)}
+                        style={{
+                            position: 'absolute',
+                            top: '20px',
+                            right: '20px',
+                            background: 'rgba(255,255,255,0.1)',
+                            border: 'none',
+                            color: 'white',
+                            width: '40px',
+                            height: '40px',
+                            borderRadius: '50%',
+                            fontSize: '24px',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center'
+                        }}
+                    >✕</button>
+                </div>
+            )}
         </div>
     )
 }

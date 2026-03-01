@@ -93,6 +93,20 @@ router.get('/messages', async (req, res) => {
     }
 });
 
+router.get('/stats', async (req, res) => {
+    try {
+        const events = await readEvents();
+        const today = new Date().toISOString().split('T')[0];
+        const upcoming = events.filter(e => {
+            const ed = e.date_iso ? e.date_iso.split('T')[0] : null;
+            return !ed || ed >= today;
+        }).length;
+        res.json({ total: events.length, upcoming });
+    } catch (err) {
+        res.status(500).json({ error: 'Failed to fetch stats' });
+    }
+});
+
 router.delete('/events/:id', async (req, res) => {
     try {
         const deleted = await deleteEvent(req.params.id);

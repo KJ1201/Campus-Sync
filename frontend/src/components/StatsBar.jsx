@@ -1,14 +1,14 @@
-export default function StatsBar({ total, activeFilterCount, botConnected }) {
+export default function StatsBar({ total, activeFilterCount, matchingCount, upcomingCount }) {
     return (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px' }} className="reveal">
             <StatCard label="Total Events" value={total} color="var(--accent-blue)" />
-            <StatCard label="Matching" value={activeFilterCount > 0 ? total : 'All'} color="var(--accent-green)" />
-            <StatCard label="Urgent" value={0} color="var(--accent-red)" isUrgent />
+            <StatCard label="Matching" value={activeFilterCount > 0 ? (matchingCount ?? total) : 'All'} color="var(--accent-green)" />
+            <StatCard label="Upcoming" value={upcomingCount} color="var(--accent-red)" />
         </div>
     )
 }
 
-function StatCard({ label, value, color, isUrgent }) {
+function StatCard({ label, value, color }) {
     return (
         <div style={{
             background: 'var(--bg-surface)',
@@ -32,7 +32,7 @@ function StatCard({ label, value, color, isUrgent }) {
             <span style={{
                 fontSize: '28px',
                 fontWeight: 800,
-                color: isUrgent && value > 0 ? 'var(--accent-red)' : 'var(--text-primary)',
+                color: 'var(--text-primary)',
                 fontFamily: 'var(--font-display)',
                 lineHeight: 1
             }}>{value}</span>

@@ -98,7 +98,16 @@ async function startBot(io) {
             const sender = msg.pushName || msg.key.participant || 'Unknown';
             const timestamp = new Date((msg.messageTimestamp || Date.now() / 1000) * 1000).toISOString();
 
-            const messageContent = msg.message;
+            let msgId = msg.key.id;
+            let messageContent = msg.message;
+
+            // Handle Edited Messages
+            if (messageContent?.protocolMessage?.type === 14) {
+                msgId = messageContent.protocolMessage.key.id;
+                messageContent = messageContent.protocolMessage.editedMessage;
+                console.log(`✏️  Message edited: ${msgId}`);
+            }
+
             const text =
                 messageContent?.conversation ||
                 messageContent?.extendedTextMessage?.text ||
@@ -106,22 +115,27 @@ async function startBot(io) {
                 messageContent?.videoMessage?.caption ||
                 '';
 
-            if (!text.trim()) continue;
-
-            const rawMsg = { groupName, sender, timestamp, text };
+            const rawMsg = { msgId, groupName, sender, timestamp, text };
             allRaw.push(rawMsg);
             if (isLive) io.emit('new_message', rawMsg);
+
+            // If an edit emptied the message, delete any associated events
+            if (msg.message?.protocolMessage?.type === 14 && !text.trim()) {
+                await require('../data/store').deleteEventsByMessageId(msgId);
+                continue;
+            }
+
+            if (!text.trim()) continue;
 
             // Limited history extraction
             const daysOld = (Date.now() - new Date(timestamp)) / (1000 * 60 * 60 * 24);
             if (isLive || daysOld < 14) {
                 let posterUrl = null;
 
-                // Download Image (Live or Recent History)
                 if (messageContent?.imageMessage) {
                     try {
                         const buffer = await downloadMediaMessage(
-                            msg,
+                            msg, // This might need the actual original msg envelope for some media components, but baileys usually handles it
                             'buffer',
                             {},
                             {
@@ -139,29 +153,43 @@ async function startBot(io) {
                     }
                 }
 
-                batchToAnalyze.push({ text, posterUrl, group: groupName, sender, timestamp, isLive });
+                batchToAnalyze.push({ msgId, text, posterUrl, group: groupName, sender, timestamp, isLive });
             }
         }
 
-        // Optimized Bulk Save
         if (allRaw.length > 0) {
             await bulkAppendMessages(allRaw);
-            console.log(`💾 Saved ${allRaw.length} raw messages.`);
         }
 
-        if (batchToAnalyze.length > 0) {
-            const results = await extractEventsFromBatch(batchToAnalyze);
-            const enriched = results.map(e => ({ id: uuidv4(), ...e }));
+        for (const item of batchToAnalyze) {
+            const results = await extractEventsFromBatch([item]);
+            const enriched = results.map(e => ({
+                id: uuidv4(),
+                ...e,
+                group: item.group,
+                sender: item.sender,
+                timestamp: item.timestamp,
+                original_text: item.text
+            }));
 
             if (enriched.length > 0) {
-                const uniqueSaved = await bulkAppendEvents(enriched);
+                const uniqueSaved = await bulkAppendEvents(enriched, item.msgId);
                 if (uniqueSaved.length > 0 && isLive) {
                     for (const ev of uniqueSaved) {
                         io.emit('new_event', ev);
-                        console.log(`📅 New event: ${ev.event_name}`);
+                        console.log(`📅 ${item.msgId ? 'Updated' : 'New'} event: ${ev.event_name}`);
                     }
-                } else if (uniqueSaved.length === 0 && enriched.length > 0) {
-                    console.log(`♻️  Skipped ${enriched.length} duplicate events.`);
+                }
+            } else if (item.msgId && isLive) {
+                // If the edit resulted in NO events being found, but there were some before, clean up
+                // (bulkAppendEvents with an empty array won't delete unless we explicitly tell it to or we handle it here)
+                // Actually our bulkAppendEvents ONLY deletes if there ARE new events. 
+                // Let's explicitly check if we need to clear events for this msgId.
+                const { readEvents } = require('../data/store');
+                const existing = await readEvents();
+                if (existing.some(e => e.sourceMsgId === item.msgId)) {
+                    await require('../data/store').deleteEventsByMessageId(item.msgId);
+                    console.log(`🗑️  Removed events for edited message: ${item.msgId}`);
                 }
             }
         }

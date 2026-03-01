@@ -23,7 +23,7 @@ export default function FullCalendar({ activeDate, onDateSelect, onClose, events
     // Event lookup
     const hasEvent = (day) => {
         if (!day) return false
-        const dStr = new Date(year, month, day).toISOString().split('T')[0]
+        const dStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`
         return events.some(e => e.date_iso && e.date_iso.split('T')[0] === dStr)
     }
 
@@ -80,9 +80,9 @@ export default function FullCalendar({ activeDate, onDateSelect, onClose, events
                     {calendarDays.map((day, i) => {
                         if (day === null) return <div key={`blank-${i}`} />
 
-                        const dateStr = new Date(year, month, day).toISOString().split('T')[0]
+                        const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`
                         const isActive = activeDate === dateStr
-                        const isToday = today.toISOString().split('T')[0] === dateStr
+                        const isToday = today.toLocaleDateString('en-CA') === dateStr // Correct local comparison
                         const eventsExist = hasEvent(day)
 
                         return (

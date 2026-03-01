@@ -14,8 +14,11 @@ export default function EventCard({ event, onDelete, onClick }) {
     const color = CATEGORY_COLORS[event.category] || '#94a3b8'
     const urgent = isUrgent(event.date_iso)
 
+    const hasTime = event.date_iso && (event.date_iso.includes('T') || event.date_iso.includes(':'));
     const dateLabel = event.date_iso ? new Date(event.date_iso).toLocaleDateString('en-IN', {
-        day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit'
+        day: 'numeric',
+        month: 'short',
+        ...(hasTime ? { hour: '2-digit', minute: '2-digit' } : {})
     }) : null
 
     const handleClick = () => {

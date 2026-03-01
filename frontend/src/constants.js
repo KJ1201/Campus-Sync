@@ -9,12 +9,11 @@ export const CATEGORY_COLORS = {
     Sports: '#fb923c',
     Deadline: '#fbbf24',
     General: '#94a3b8',
-    Raw: '#64748b',
 };
 
 // All categories in display order
 export const CATEGORIES = [
-    'Raw', 'Hackathon', 'Seminar', 'Workshop', 'Placement',
+    'Hackathon', 'Seminar', 'Workshop', 'Placement',
     'Exam', 'Cultural', 'Sports', 'Deadline', 'General',
 ];
 

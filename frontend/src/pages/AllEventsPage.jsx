@@ -22,6 +22,7 @@ export default function AllEventsPage() {
     const { events, loading, prependEvent, removeEvent } = useEvents({ category, search, date })
     const [botConnected, setBotConnected] = useState(false)
     const [toast, setToast] = useState(null)
+    const [stats, setStats] = useState({ total: 0, upcoming: 0 })
     const [rawMessages, setRawMessages] = useState([])
     const [isDesktop, setIsDesktop] = useState(window.innerWidth >= 1280)
     const [selectedEventId, setSelectedEventId] = useState(null)
@@ -39,6 +40,13 @@ export default function AllEventsPage() {
             .then(d => setBotConnected(d.botConnected))
             .catch(() => setBotConnected(false))
     }, [])
+
+    useEffect(() => {
+        fetch(`${API_BASE}/stats`)
+            .then(r => r.json())
+            .then(d => setStats(d))
+            .catch(() => { })
+    }, [events.length]) // Refresh when event list changes
 
     useEffect(() => {
         fetch(`${API_BASE}/messages${date ? `?date=${date}` : ''}`)
@@ -103,9 +111,10 @@ export default function AllEventsPage() {
 
                     <div style={{ marginBottom: '24px' }}>
                         <StatsBar
-                            total={events.length}
+                            total={stats.total}
                             activeFilterCount={activeFilterCount}
-                            botConnected={botConnected}
+                            matchingCount={events.length}
+                            upcomingCount={stats.upcoming}
                         />
                     </div>
 
@@ -125,6 +134,15 @@ export default function AllEventsPage() {
                         />
                     )}
                 </main>
+
+                {fullCalendarOpen && (
+                    <FullCalendar
+                        activeDate={date}
+                        onDateSelect={v => setFilter('date', v)}
+                        onClose={() => setFullCalendarOpen(false)}
+                        events={events}
+                    />
+                )}
 
                 {toast && <LiveToast event={toast} onDismiss={() => setToast(null)} />}
             </div>
@@ -162,12 +180,16 @@ export default function AllEventsPage() {
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                         <h1 style={{
                             fontFamily: 'var(--font-display)',
-                            fontSize: '28px',
+                            fontSize: '24px',
                             fontWeight: 800,
                             color: 'var(--text-primary)',
-                            margin: 0
+                            margin: 0,
+                            height: '36px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            lineHeight: 'normal'
                         }}>
-                            {category === 'Past' ? 'Past Events Archive' : (category ? (category === 'Raw' ? 'Raw Message Feed' : category) : (date ? `Events on ${new Date(date).toLocaleDateString('en-IN', { day: 'numeric', month: 'long' })}` : 'Upcoming Events'))}
+                            {category === 'Past' ? 'Past Events Archive' : (category ? category : (date ? `Events on ${new Date(date).toLocaleDateString('en-IN', { day: 'numeric', month: 'long' })}` : 'Upcoming Events'))}
                         </h1>
                         <div style={{ width: '300px', display: 'flex', gap: '8px' }}>
                             <div style={{ flex: 1 }}>
@@ -192,38 +214,29 @@ export default function AllEventsPage() {
                         </div>
                     </div>
 
-                    {category !== 'Raw' && (
-                        <CalendarStrip
-                            activeDate={date}
-                            onDateSelect={v => setFilter('date', v)}
-                        />
-                    )}
+                    <CalendarStrip
+                        activeDate={date}
+                        onDateSelect={v => setFilter('date', v)}
+                    />
                 </header>
 
                 <div style={{ marginBottom: '32px' }}>
                     <StatsBar
-                        total={category === 'Raw' ? rawMessages.length : events.length}
+                        total={stats.total}
                         activeFilterCount={activeFilterCount}
-                        botConnected={botConnected}
+                        matchingCount={events.length}
+                        upcomingCount={stats.upcoming}
                     />
                 </div>
 
-                {category === 'Raw' ? (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                        {rawMessages.map((msg, i) => (
-                            <RawMessageCard key={i} message={msg} />
-                        ))}
-                    </div>
-                ) : (
-                    <EventFeedList
-                        events={events}
-                        loading={loading}
-                        hasFilters={hasFilters}
-                        onClearFilters={clearFilters}
-                        onDeleteEvent={removeEvent}
-                        onEventSelect={setSelectedEventId}
-                    />
-                )}
+                <EventFeedList
+                    events={events}
+                    loading={loading}
+                    hasFilters={hasFilters}
+                    onClearFilters={clearFilters}
+                    onDeleteEvent={removeEvent}
+                    onEventSelect={setSelectedEventId}
+                />
             </main>
 
             {/* Right Panel (Detail) */}

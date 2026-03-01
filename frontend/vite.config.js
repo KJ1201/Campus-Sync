@@ -9,6 +9,8 @@ export default defineConfig({
       '/events': 'http://localhost:3001',
       '/uploads': 'http://localhost:3001',
       '/health': 'http://localhost:3001',
+      '/stats': 'http://localhost:3001',
+      '/messages': 'http://localhost:3001',
     },
   },
 })

@@ -21,7 +21,7 @@ export default function Sidebar({ activeCategory, onApplyFilters, botConnected, 
             bottom: 0,
             background: 'var(--bg-sidebar)',
             borderRight: '1px solid var(--border-default)',
-            padding: '24px 16px',
+            padding: '32px 24px',
             display: 'flex',
             flexDirection: 'column',
             gap: '32px',
@@ -30,11 +30,18 @@ export default function Sidebar({ activeCategory, onApplyFilters, botConnected, 
         }}>
             <div
                 onClick={() => nav('/')}
-                style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}
+                style={{
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    height: '36px',
+                    marginBottom: '8px'
+                }}
             >
                 <span style={{
                     fontFamily: 'var(--font-display)',
-                    fontSize: '20px',
+                    fontSize: '24px',
                     fontWeight: 800,
                     color: 'var(--text-primary)',
                     letterSpacing: '-0.02em',
@@ -67,7 +74,7 @@ export default function Sidebar({ activeCategory, onApplyFilters, botConnected, 
                 <Label>CALENDAR</Label>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '4px', padding: '0 4px' }}>
                     {miniDays.map((d, i) => {
-                        const iso = d.toISOString().split('T')[0]
+                        const iso = d.toLocaleDateString('en-CA') // YYYY-MM-DD local
                         const isActive = activeDate === iso
                         return (
                             <button
@@ -139,7 +146,7 @@ function Label({ children }) {
             textTransform: 'uppercase',
             letterSpacing: '0.08em',
             marginBottom: '10px',
-            paddingLeft: '10px'
+            paddingLeft: '12px'
         }}>
             {children}
         </div>

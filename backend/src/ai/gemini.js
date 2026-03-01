@@ -68,16 +68,21 @@ async function extractEventsFromBatch(messagesBatch) {
     const candidates = messagesBatch.filter(m => isLikelyEvent(m.text));
     if (candidates.length === 0) return [];
 
-    const currentDate = new Date().toISOString().split('T')[0];
+    // Provide richer local context for relative date/time parsing
+    const now = new Date();
+    const localContext = {
+        date: now.toLocaleDateString('en-IN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }),
+        time: now.toLocaleTimeString('en-IN', { hour12: false, hour: '2-digit', minute: '2-digit' }),
+        iso: now.toISOString()
+    };
 
-    // 2. Format as a numbered list for Gemini
     const messagesBlob = candidates.map((m, i) =>
-        `[MSG #${i + 1}] [Group: ${m.group || 'Unknown'}] [Sender: ${m.sender || 'Unknown'}] [Time: ${m.timestamp}]\nText: ${m.text}\nPoster Context: ${m.posterUrl || 'None'}`
+        `[MSG #${i + 1}] [Group: ${m.group || 'Unknown'}] [Sender: ${m.sender || 'Unknown'}] [Message Received Time: ${m.timestamp}]\nText: ${m.text}\nPoster Context: ${m.posterUrl || 'None'}`
     ).join('\n\n---\n\n');
 
     const prompt = PROMPT_TEMPLATE
-        .replace('{current_date}', currentDate)
-        .replace('{context}', `You are processing ${candidates.length} messages. For each one that is an academic/technical event, add it to the JSON array.`)
+        .replace('{current_date}', `${localContext.date} ${localContext.time} (UTC: ${localContext.iso})`)
+        .replace('{context}', `You are processing ${candidates.length} messages. For each one that is an academic/technical event, add it to the JSON array. IMPORTANT: If a specific time is mentioned (e.g. 10 AM, 4:30 PM), include it in the 'date_iso' field as YYYY-MM-DDTHH:mm:ss. If no time is mentioned, use YYYY-MM-DD only.`)
         .replace('{messages}', messagesBlob);
 
     try {
